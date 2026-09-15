@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { RefreshCw, SlidersHorizontal, ExternalLink, Calculator, Building2 } from "lucide-react";
 import { UserProfile, computeMatches, ScoredScheme } from "../lib/matching";
+import { fetchEntrepreneurMatches } from "../lib/api";
 import SchemeCard from "./SchemeCard";
 import SchemeModal from "./SchemeModal";
 
@@ -19,8 +20,21 @@ const FILTERS = [
 ] as const;
 
 export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStudents }: Props) {
-  const matches = useMemo(() => computeMatches(profile), [profile]);
+  const [matches, setMatches] = useState<ScoredScheme[]>(() => computeMatches(profile));
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
+
+  useEffect(() => {
+    let cancelled = false;
+    setMatches(computeMatches(profile));
+    fetchEntrepreneurMatches(profile)
+      .then((remoteMatches) => {
+        if (!cancelled && remoteMatches.length) setMatches(remoteMatches);
+      })
+      .catch((error) => {
+        console.warn("Backend entrepreneur matching unavailable; using local fallback.", error);
+      });
+    return () => { cancelled = true; };
+  }, [profile]);
   const [active, setActive] = useState<ScoredScheme | null>(null);
 
   const filtered = matches.filter((m) => {

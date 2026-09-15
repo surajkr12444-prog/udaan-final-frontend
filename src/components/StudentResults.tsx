@@ -1,7 +1,8 @@
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { RefreshCw, ExternalLink, GraduationCap, Award, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { StudentProfile, computeScholarshipMatches, ScoredScholarship } from "../lib/scholarshipMatching";
+import { fetchScholarshipMatches } from "../lib/api";
 import StudentCard from "./StudentCard";
 import StudentScholarshipModal from "./StudentScholarshipModal";
 
@@ -19,8 +20,21 @@ const FILTERS = [
 ] as const;
 
 export default function StudentResults({ profile, onRestart, onSwitchToLoans }: Props) {
-  const matches = useMemo(() => computeScholarshipMatches(profile), [profile]);
+  const [matches, setMatches] = useState<ScoredScholarship[]>(() => computeScholarshipMatches(profile));
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
+
+  useEffect(() => {
+    let cancelled = false;
+    setMatches(computeScholarshipMatches(profile));
+    fetchScholarshipMatches(profile)
+      .then((remoteMatches) => {
+        if (!cancelled && remoteMatches.length) setMatches(remoteMatches);
+      })
+      .catch((error) => {
+        console.warn("Backend scholarship matching unavailable; using local fallback.", error);
+      });
+    return () => { cancelled = true; };
+  }, [profile]);
   const [activeItem, setActiveItem] = useState<ScoredScholarship | null>(null);
 
   const filtered = useMemo(() => {
