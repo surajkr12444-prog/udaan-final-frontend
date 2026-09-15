@@ -10,27 +10,27 @@ interface Msg {
 const INTRO: Msg = {
   role: "bot",
   text:
-    "Hi! I'm the Udaan.AI assistant. Ask me about women's schemes, SC/ST loans, disability finance, collateral-free credit, or how matching works.",
+    "Namaste! I'm the Udaan assistant. Ask me about government business loans (Mudra, PMEGP), student scholarships (NSP, AICTE, PM-YASASVI), or EMI calculations.",
 };
 
 function reply(input: string): string {
   const q = input.toLowerCase();
-  if (/women|woman|mahila/.test(q))
-    return "For women entrepreneurs, look at Stand-Up India (₹10L–1Cr), TREAD Scheme, Udyogini, and Mahila e-Haat for market access. Run the matcher to see them ranked for your exact profile.";
+  if (/scholarship|student|padhai|college|school/.test(q))
+    return "For students, check out the National Scholarship Portal (NSP), Post-Matric SC/ST/OBC schemes, PM-YASASVI (up to ₹1.25 Lakh), AICTE Pragati for girls (₹50,000/yr), and Central Sector PM-USP. Use our 'Student Match' to check your eligibility!";
+  if (/emi|calculator|interest|kist/.test(q))
+    return "You can use our built-in EMI Calculator to estimate monthly repayments and see how government capital subsidies (like PMEGP 15-35%) reduce your principal loan liability!";
+  if (/women|woman|mahila|girl/.test(q))
+    return "For women entrepreneurs: Stand-Up India (₹10L–1Cr) and PMEGP (up to 35% subsidy). For girl students: AICTE Pragati (₹50,000/yr for engineering/diploma) and UGC Single Girl Child scholarship (₹36,200/yr).";
   if (/sc\/?st|caste|dalit|adivasi/.test(q))
-    return "SC/ST founders often score highest on Stand-Up India, the National SC-ST Hub, and the Venture Capital Fund for SCs. PMEGP and CGTMSE also give priority treatment.";
+    return "For SC/ST founders: Stand-Up India & PMEGP provide priority and higher subsidies. For SC/ST students: NSP Post-Matric Scholarships offer 100% compulsory fee reimbursement and maintenance stipend.";
   if (/disab|pwd|divyang/.test(q))
-    return "NHFDC's Micro-Finance Scheme offers concessional loans (as low as 4-6%) specifically for persons with disabilities, alongside general schemes like PMEGP and MUDRA.";
-  if (/minority|muslim|christian|sikh|parsi/.test(q))
-    return "NMDFC channels concessional term loans for minority-community entrepreneurs, and Weavers' MUDRA is a strong fit if you're in handicrafts.";
-  if (/collateral|guarantee/.test(q))
-    return "Collateral-free options include MUDRA (up to ₹20L), CGTMSE-backed bank loans (up to ₹2Cr), and PM SVANidhi for street vendors.";
-  if (/rural|village|farm/.test(q))
-    return "Rural entrepreneurs, especially women in SHGs, should look at DAY-NRLM for revolving funds and low-interest bank linkage.";
-  if (/how|match|work|score/.test(q))
-    return "Our engine scores each scheme on 5 weighted factors: your identity category, business stage, sector, location type, and funding range — then ranks all 16 schemes by fit.";
-  if (/hello|hi|hey/.test(q)) return "Hey there! Ready to find your funding match? Tap 'Find My Schemes' any time.";
-  return "Good question — the most reliable way to get a precise answer is to run the 2-minute matcher. It'll rank every scheme for your specific situation.";
+    return "Differently-abled individuals qualify for NHFDC concessional business loans (4-6% interest), and students qualify for AICTE Saksham Scholarship (₹50,000/yr).";
+  if (/collateral|guarantee|security/.test(q))
+    return "No collateral is required for MUDRA loans (up to ₹10-20 Lakh), PM SVANidhi (up to ₹50,000), and CGTMSE guarantee-backed MSME loans up to ₹2 Crore.";
+  if (/how|portal|official|apply/.test(q))
+    return "Udaan matches you based on your eligibility and directly redirects you to authentic Government of India portals (scholarships.gov.in, jansamarth.in, udyamimitra.in) with zero middlemen.";
+  if (/hello|hi|hey|namaste/.test(q)) return "Namaste! Are you exploring Business Loans or Student Scholarships today?";
+  return "You can run either our 'Student Scholarship Match' or 'Entrepreneur Loan Match' from the top menu to get personalized official recommendations ranked by eligibility!";
 }
 
 export default function ChatWidget() {

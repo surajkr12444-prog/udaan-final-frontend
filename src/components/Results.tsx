@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { RefreshCw, SlidersHorizontal } from "lucide-react";
+import { RefreshCw, SlidersHorizontal, ExternalLink, Calculator, Building2 } from "lucide-react";
 import { UserProfile, computeMatches, ScoredScheme } from "../lib/matching";
 import SchemeCard from "./SchemeCard";
 import SchemeModal from "./SchemeModal";
@@ -8,6 +8,8 @@ import SchemeModal from "./SchemeModal";
 interface Props {
   profile: UserProfile;
   onRestart: () => void;
+  onOpenEmi?: () => void;
+  onSwitchToStudents?: () => void;
 }
 
 const FILTERS = [
@@ -16,7 +18,7 @@ const FILTERS = [
   { key: "grant", label: "No collateral" },
 ] as const;
 
-export default function Results({ profile, onRestart }: Props) {
+export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStudents }: Props) {
   const matches = useMemo(() => computeMatches(profile), [profile]);
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
   const [active, setActive] = useState<ScoredScheme | null>(null);
@@ -31,7 +33,7 @@ export default function Results({ profile, onRestart }: Props) {
   const topScore = matches[0]?.score ?? 0;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+    <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,7 +52,7 @@ export default function Results({ profile, onRestart }: Props) {
           <span className="font-bold text-gold-soft">{topScore}%</span> fit — start there.
         </p>
 
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap items-center gap-2">
           {FILTERS.map((f) => (
             <button
               key={f.key}
@@ -73,9 +75,46 @@ export default function Results({ profile, onRestart }: Props) {
         </div>
       </motion.div>
 
-      <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-ink/40">
-        <SlidersHorizontal size={13} /> Showing {filtered.length} of {matches.length} schemes,
-        ranked by match score
+      {/* Official Government Direct Access Bar */}
+      <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-gold/30 bg-gold/10 p-4 text-ink">
+        <div className="flex items-center gap-3">
+          <Building2 size={20} className="text-terracotta shrink-0" />
+          <p className="text-xs font-medium text-ink">
+            <strong>Direct Official Portals:</strong> You can apply directly on{" "}
+            <a href="https://www.jansamarth.in" target="_blank" rel="noreferrer" className="font-bold text-terracotta hover:underline">
+              JanSamarth.in
+            </a>{" "}
+            or{" "}
+            <a href="https://www.udyamimitra.in" target="_blank" rel="noreferrer" className="font-bold text-teal-dark hover:underline">
+              UdyamiMitra.in
+            </a>
+            . Zero middlemen or broker fees.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {onOpenEmi && (
+            <button
+              onClick={onOpenEmi}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-bold text-ink shadow-xs hover:bg-black/5 transition"
+            >
+              <Calculator size={13} className="text-teal" /> Calculate EMI
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-6 flex items-center justify-between text-xs font-semibold text-ink/50">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal size={13} /> Showing {filtered.length} of {matches.length} schemes, ranked by match score
+        </div>
+        {onSwitchToStudents && (
+          <button
+            onClick={onSwitchToStudents}
+            className="text-teal hover:underline font-bold"
+          >
+            Looking for Student Scholarships? Switch here →
+          </button>
+        )}
       </div>
 
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
