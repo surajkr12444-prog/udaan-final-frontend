@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { RefreshCw, SlidersHorizontal, ExternalLink, Calculator, Building2 } from "lucide-react";
 import { UserProfile, computeMatches, ScoredScheme } from "../lib/matching";
-import { fetchEntrepreneurMatches } from "../lib/api";
+import { fetchEntrepreneurMatches, saveScheme } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import SchemeCard from "./SchemeCard";
 import SchemeModal from "./SchemeModal";
 
@@ -11,6 +12,7 @@ interface Props {
   onRestart: () => void;
   onOpenEmi?: () => void;
   onSwitchToStudents?: () => void;
+  onRequestLogin?: () => void;
 }
 
 const FILTERS = [
@@ -19,7 +21,9 @@ const FILTERS = [
   { key: "grant", label: "No collateral" },
 ] as const;
 
-export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStudents }: Props) {
+export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStudents, onRequestLogin }: Props) {
+  const { user } = useAuth();
+  const [notice, setNotice] = useState("");
   const [matches, setMatches] = useState<ScoredScheme[]>(() => computeMatches(profile));
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
 
@@ -34,7 +38,7 @@ export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStude
         console.warn("Backend entrepreneur matching unavailable; using local fallback.", error);
       });
     return () => { cancelled = true; };
-  }, [profile]);
+  }, [profile, user?.id]);
   const [active, setActive] = useState<ScoredScheme | null>(null);
 
   const filtered = matches.filter((m) => {
@@ -45,6 +49,17 @@ export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStude
   });
 
   const topScore = matches[0]?.score ?? 0;
+
+  async function handleSave(item: ScoredScheme) {
+    if (!user) { onRequestLogin?.(); return; }
+    try {
+      await saveScheme(item.scheme.id);
+      setNotice(`${item.scheme.shortName} saved to your dashboard.`);
+      setTimeout(() => setNotice(""), 2500);
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : "Could not save scheme");
+    }
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
@@ -131,6 +146,8 @@ export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStude
         )}
       </div>
 
+      {notice && <div className="mt-5 rounded-2xl border border-teal/20 bg-teal/10 px-4 py-3 text-xs font-bold text-teal-dark">{notice}</div>}
+
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((item, i) => (
           <motion.div
@@ -139,7 +156,7 @@ export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStude
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.4) }}
           >
-            <SchemeCard item={item} onOpen={setActive} rank={i + 1} />
+            <SchemeCard item={item} onOpen={setActive} onSave={handleSave} rank={i + 1} />
           </motion.div>
         ))}
       </div>

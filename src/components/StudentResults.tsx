@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { RefreshCw, ExternalLink, GraduationCap, Award, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { StudentProfile, computeScholarshipMatches, ScoredScholarship } from "../lib/scholarshipMatching";
-import { fetchScholarshipMatches } from "../lib/api";
+import { fetchScholarshipMatches, saveScholarship } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import StudentCard from "./StudentCard";
 import StudentScholarshipModal from "./StudentScholarshipModal";
 
@@ -10,6 +11,7 @@ interface Props {
   profile: StudentProfile;
   onRestart: () => void;
   onSwitchToLoans?: () => void;
+  onRequestLogin?: () => void;
 }
 
 const FILTERS = [
@@ -19,7 +21,9 @@ const FILTERS = [
   { key: "girls", label: "Girls & Priority Quota" },
 ] as const;
 
-export default function StudentResults({ profile, onRestart, onSwitchToLoans }: Props) {
+export default function StudentResults({ profile, onRestart, onSwitchToLoans, onRequestLogin }: Props) {
+  const { user } = useAuth();
+  const [notice, setNotice] = useState("");
   const [matches, setMatches] = useState<ScoredScholarship[]>(() => computeScholarshipMatches(profile));
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["key"]>("all");
 
@@ -34,7 +38,7 @@ export default function StudentResults({ profile, onRestart, onSwitchToLoans }: 
         console.warn("Backend scholarship matching unavailable; using local fallback.", error);
       });
     return () => { cancelled = true; };
-  }, [profile]);
+  }, [profile, user?.id]);
   const [activeItem, setActiveItem] = useState<ScoredScholarship | null>(null);
 
   const filtered = useMemo(() => {
@@ -52,6 +56,17 @@ export default function StudentResults({ profile, onRestart, onSwitchToLoans }: 
   }, [matches, filter]);
 
   const topMatch = matches[0];
+
+  async function handleSave(item: ScoredScholarship) {
+    if (!user) { onRequestLogin?.(); return; }
+    try {
+      await saveScholarship(item.scholarship.id);
+      setNotice(`${item.scholarship.shortName} saved to your dashboard.`);
+      setTimeout(() => setNotice(""), 2500);
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : "Could not save scholarship");
+    }
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 sm:px-8">
@@ -143,6 +158,8 @@ export default function StudentResults({ profile, onRestart, onSwitchToLoans }: 
         )}
       </div>
 
+      {notice && <div className="mt-5 rounded-2xl border border-teal/20 bg-teal/10 px-4 py-3 text-xs font-bold text-teal-dark">{notice}</div>}
+
       {/* Cards Grid */}
       <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((item, index) => (
@@ -150,6 +167,7 @@ export default function StudentResults({ profile, onRestart, onSwitchToLoans }: 
             key={item.scholarship.id}
             item={item}
             onOpen={setActiveItem}
+            onSave={handleSave}
             rank={index + 1}
           />
         ))}

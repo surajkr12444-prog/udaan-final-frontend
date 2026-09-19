@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import StatsStrip from "./components/StatsStrip";
 import HowItWorks from "./components/HowItWorks";
+import AccountCTA from "./components/AccountCTA";
 import SchemeShowcase from "./components/SchemeShowcase";
 import StudentShowcase from "./components/StudentShowcase";
 import OfficialPortalsSection from "./components/OfficialPortalsSection";
@@ -14,6 +15,7 @@ import Results from "./components/Results";
 import StudentWizard from "./components/StudentWizard";
 import StudentResults from "./components/StudentResults";
 import EmiCalculator from "./components/EmiCalculator";
+import AccountPanel from "./components/AccountPanel";
 import { UserProfile } from "./lib/matching";
 import { StudentProfile } from "./lib/scholarshipMatching";
 
@@ -25,10 +27,14 @@ type View =
   | "student-results"
   | "emi";
 
+type AuthMode = "login" | "signup";
+
 function App() {
   const [view, setView] = useState<View>("home");
   const [entrepreneurProfile, setEntrepreneurProfile] = useState<UserProfile | null>(null);
   const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("login");
 
   const goHome = () => {
     setView("home");
@@ -50,101 +56,75 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const openAccount = () => {
+    setAuthMode("login");
+    setAccountOpen(true);
+  };
+
+  const openLogin = () => {
+    setAuthMode("login");
+    setAccountOpen(true);
+  };
+
+  const openSignup = () => {
+    setAuthMode("signup");
+    setAccountOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-cream selection:bg-teal selection:text-cream">
-      {/* Universal Top Navigation */}
       <Navbar
         onHome={goHome}
         onStartEntrepreneur={startEntrepreneur}
         onStartStudent={startStudent}
         onOpenEmi={openEmi}
+        onOpenAccount={openAccount}
+        onLogin={openLogin}
+        onSignup={openSignup}
         mode={view}
       />
 
-      {/* 1. HOME VIEW */}
       {view === "home" && (
         <>
-          <Hero
-            onStartEntrepreneur={startEntrepreneur}
-            onStartStudent={startStudent}
-            onOpenEmi={openEmi}
-          />
+          <Hero onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} />
           <StatsStrip />
           <HowItWorks />
-          {/* Entrepreneur Schemes Showcase */}
+          <AccountCTA onLogin={openLogin} onSignup={openSignup} onAccount={openAccount} />
           <SchemeShowcase onStart={startEntrepreneur} />
-          {/* Student Scholarships Showcase */}
           <StudentShowcase onStartStudent={startStudent} />
-          {/* Official Govt Portals Directory with Direct Links */}
           <OfficialPortalsSection />
           <Testimonials />
-          <Footer
-            onStartEntrepreneur={startEntrepreneur}
-            onStartStudent={startStudent}
-            onOpenEmi={openEmi}
-          />
+          <Footer onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} />
         </>
       )}
 
-      {/* 2. ENTREPRENEUR WIZARD FLOW */}
       {view === "entrepreneur-wizard" && (
         <div className="py-8">
-          <Wizard
-            onComplete={(p) => {
-              setEntrepreneurProfile(p);
-              setView("entrepreneur-results");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          />
+          <Wizard onComplete={(p) => { setEntrepreneurProfile(p); setView("entrepreneur-results"); window.scrollTo({ top: 0, behavior: "smooth" }); }} />
         </div>
       )}
 
-      {/* 3. ENTREPRENEUR RESULTS FLOW */}
       {view === "entrepreneur-results" && entrepreneurProfile && (
-        <Results
-          profile={entrepreneurProfile}
-          onRestart={startEntrepreneur}
-          onOpenEmi={openEmi}
-          onSwitchToStudents={startStudent}
-        />
+        <Results profile={entrepreneurProfile} onRestart={startEntrepreneur} onOpenEmi={openEmi} onSwitchToStudents={startStudent} onRequestLogin={openLogin} />
       )}
 
-      {/* 4. STUDENT WIZARD FLOW */}
       {view === "student-wizard" && (
         <div className="py-8">
-          <StudentWizard
-            onComplete={(p) => {
-              setStudentProfile(p);
-              setView("student-results");
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-            onCancel={goHome}
-          />
+          <StudentWizard onComplete={(p) => { setStudentProfile(p); setView("student-results"); window.scrollTo({ top: 0, behavior: "smooth" }); }} onCancel={goHome} />
         </div>
       )}
 
-      {/* 5. STUDENT RESULTS FLOW */}
       {view === "student-results" && studentProfile && (
-        <StudentResults
-          profile={studentProfile}
-          onRestart={startStudent}
-          onSwitchToLoans={startEntrepreneur}
-        />
+        <StudentResults profile={studentProfile} onRestart={startStudent} onSwitchToLoans={startEntrepreneur} onRequestLogin={openLogin} />
       )}
 
-      {/* 6. EMI CALCULATOR TOOL VIEW */}
       {view === "emi" && (
         <div className="py-8">
-          <EmiCalculator
-            onFindSchemes={() => {
-              startEntrepreneur();
-            }}
-            onClose={goHome}
-          />
+          <EmiCalculator onFindSchemes={startEntrepreneur} onClose={goHome} />
         </div>
       )}
 
-      {/* AI Assistant Chat Widget */}
+      <AccountPanel open={accountOpen} onClose={() => setAccountOpen(false)} authMode={authMode} />
       <ChatWidget />
     </div>
   );

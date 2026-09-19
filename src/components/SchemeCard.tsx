@@ -1,9 +1,10 @@
 import { ScoredScheme } from "../lib/matching";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink, Bookmark } from "lucide-react";
 
 interface Props {
   item: ScoredScheme;
   onOpen: (item: ScoredScheme) => void;
+  onSave?: (item: ScoredScheme) => void;
   rank: number;
 }
 
@@ -13,7 +14,7 @@ function scoreColor(score: number) {
   return "#C1502E";
 }
 
-export default function SchemeCard({ item, onOpen, rank }: Props) {
+export default function SchemeCard({ item, onOpen, onSave, rank }: Props) {
   const { scheme, score, reasons } = item;
   const circleColor = scoreColor(score);
 
@@ -36,50 +37,34 @@ export default function SchemeCard({ item, onOpen, rank }: Props) {
           <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-full">
             <svg viewBox="0 0 36 36" className="h-16 w-16 -rotate-90">
               <circle cx="18" cy="18" r="15.5" fill="none" stroke="#eee2c8" strokeWidth="3" />
-              <circle
-                cx="18"
-                cy="18"
-                r="15.5"
-                fill="none"
-                stroke={circleColor}
-                strokeWidth="3"
-                strokeDasharray={`${(score / 100) * 97.4} 97.4`}
-                strokeLinecap="round"
-              />
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke={circleColor} strokeWidth="3" strokeDasharray={`${(score / 100) * 97.4} 97.4`} strokeLinecap="round" />
             </svg>
             <span className="absolute font-display text-sm font-bold text-ink">{score}%</span>
           </div>
         </div>
 
         <p className="mt-4 text-sm leading-relaxed text-ink/60">{scheme.tagline}</p>
-
         <div className="mt-4 flex flex-wrap gap-2">
           {reasons.slice(0, 2).map((r) => (
-            <span
-              key={r}
-              className="rounded-full bg-teal/8 px-2.5 py-1 text-[11px] font-semibold text-teal-dark"
-            >
-              {r}
-            </span>
+            <span key={r} className="rounded-full bg-teal/8 px-2.5 py-1 text-[11px] font-semibold text-teal-dark">{r}</span>
           ))}
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between border-t border-ink/10 pt-4">
-        <a
-          href={scheme.applyUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:text-teal-dark transition"
-        >
+      <div className="mt-5 flex items-center justify-between gap-2 border-t border-ink/10 pt-4">
+        <a href={scheme.applyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:text-teal-dark transition">
           Govt Portal <ExternalLink size={12} />
         </a>
-        <button
-          onClick={() => onOpen(item)}
-          className="flex items-center gap-1 text-sm font-bold text-terracotta transition group-hover:gap-2"
-        >
-          Details <ArrowRight size={15} />
-        </button>
+        <div className="flex items-center gap-2">
+          {onSave && (
+            <button onClick={() => onSave(item)} className="inline-flex items-center gap-1 rounded-full bg-teal/10 px-2.5 py-1.5 text-xs font-bold text-teal-dark hover:bg-teal/20">
+              <Bookmark size={12} /> Save
+            </button>
+          )}
+          <button onClick={() => onOpen(item)} className="flex items-center gap-1 text-sm font-bold text-terracotta transition group-hover:gap-2">
+            Details <ArrowRight size={15} />
+          </button>
+        </div>
       </div>
     </div>
   );
