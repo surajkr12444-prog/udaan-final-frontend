@@ -76,3 +76,14 @@ export async function saveProfile(type: "entrepreneur" | "student", profile: unk
     body: JSON.stringify({ type, profile }),
   });
 }
+
+export async function chatWithAssistant(
+  message: string,
+  language: "en" | "hi" | "hinglish" = "en",
+  portalGuide?: { title: string; portalName: string; url: string; kind: string } | null,
+) {
+  return request("/api/assistant/chat", {
+    method: "POST",
+    body: JSON.stringify({ message, language, portalGuide: portalGuide || null }),
+  });
+}

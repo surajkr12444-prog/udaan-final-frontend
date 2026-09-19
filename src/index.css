@@ -86,3 +86,8 @@ html[data-theme="dark"] .bg-ink { background-color: #06110f !important; }
 html[data-theme="dark"] .bg-ink-soft,
 html[data-theme="dark"] .bg-ink-soft\/90 { background-color: rgb(13 31 26 / .96) !important; }
 html[data-theme="dark"] .text-cream { color: #f8f3e9 !important; }
+
+/* Premium auth/login surface */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

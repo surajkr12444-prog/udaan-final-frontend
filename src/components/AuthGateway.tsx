@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { BriefcaseBusiness, GraduationCap, LockKeyhole, Mail, Moon, Sun, UserRound, Languages, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowRight, Feather, Languages, LockKeyhole, Mail, Moon, ShieldCheck, Sparkles, Sun, UserRound } from 'lucide-react';
 import GoogleSignIn from './GoogleSignIn';
 import { useAuth } from '../lib/auth';
 import { usePreferences, type Language } from '../lib/preferences';
@@ -29,56 +29,66 @@ export default function AuthGateway() {
     } finally { setBusy(false); }
   }
 
+  const switchMode = (next: Mode) => { setMode(next); setError(''); };
+
   return (
-    <main className="min-h-screen bg-cream text-ink">
-      <div className="mx-auto grid min-h-screen max-w-7xl lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="relative hidden overflow-hidden bg-ink p-12 text-cream lg:flex lg:flex-col lg:justify-between">
-          <div className="absolute -right-24 top-16 h-80 w-80 rounded-full bg-gold/20 blur-3xl" />
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-gold/10 px-4 py-2 text-xs font-bold uppercase tracking-[.18em] text-gold-soft"><Sparkles size={14}/>{t('gatewayEyebrow')}</div>
-            <h1 className="mt-8 max-w-xl font-display text-5xl font-bold leading-[1.06]">{t('gatewayTitle')}</h1>
-            <p className="mt-6 max-w-xl text-base leading-8 text-cream/70">{t('gatewayBody')}</p>
-          </div>
-          <div className="relative grid gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-5"><BriefcaseBusiness className="text-gold-soft"/><h3 className="mt-3 font-bold">Entrepreneurs</h3><p className="mt-1 text-sm text-cream/60">Mudra, PMEGP, Stand-Up India, MSME funding and official portal guidance.</p></div>
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-5"><GraduationCap className="text-teal-light"/><h3 className="mt-3 font-bold">Students</h3><p className="mt-1 text-sm text-cream/60">NSP, AICTE, PM-YASASVI, Central Sector scholarships and document guidance.</p></div>
-          </div>
-        </section>
+    <main className="relative min-h-screen overflow-hidden bg-[#040c18] text-white">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,124,255,.16),transparent_28%),radial-gradient(circle_at_80%_70%,rgba(18,78,148,.2),transparent_28%),linear-gradient(135deg,#030913,#081426_55%,#02070f)]" />
+      <motion.div className="absolute -left-32 top-24 h-[34rem] w-[34rem] rounded-full border border-blue-300/10" animate={{ rotate: 360 }} transition={{ duration: 30, repeat: Infinity, ease: 'linear' }} />
+      <motion.div className="absolute -right-36 bottom-[-9rem] h-[40rem] w-[40rem] rounded-full border border-sky-300/10" animate={{ rotate: -360 }} transition={{ duration: 38, repeat: Infinity, ease: 'linear' }} />
+      <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-blue-950/25 to-transparent" />
 
-        <section className="flex items-center justify-center p-5 sm:p-10">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
-            <div className="mb-6 flex items-center justify-between">
-              <button className="flex items-center gap-2 font-display text-2xl font-bold"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal text-cream">U</span>Udaan</button>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center rounded-full border border-ink/10 bg-white px-2 py-1"><Languages size={14} className="mr-1 text-teal"/><select value={language} onChange={(e)=>setLanguage(e.target.value as Language)} className="bg-transparent text-xs font-bold outline-none"><option value="en">English</option><option value="hi">हिन्दी</option><option value="hinglish">Hinglish</option></select></div>
-                <button onClick={toggleTheme} className="rounded-full border border-ink/10 bg-white p-2 text-ink" aria-label="Toggle theme">{theme==='dark'?<Sun size={16}/>:<Moon size={16}/>}</button>
-              </div>
+      <header className="relative z-10 flex items-center justify-between px-5 py-5 sm:px-9">
+        <div className="flex items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-sky-300/20 bg-white/[.05] shadow-[0_0_35px_rgba(56,189,248,.12)]"><Feather size={23} className="text-sky-300" /></span>
+          <div><p className="text-xl font-semibold tracking-tight">Udaan</p><p className="text-[9px] uppercase tracking-[.28em] text-sky-100/45">Opportunities beyond boundaries</p></div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-full border border-white/10 bg-white/[.05] px-3 py-2 backdrop-blur-xl"><Languages size={14} className="mr-2 text-sky-300"/><select value={language} onChange={(e)=>setLanguage(e.target.value as Language)} className="bg-transparent text-xs font-bold text-white outline-none"><option className="bg-slate-950" value="en">English</option><option className="bg-slate-950" value="hi">हिन्दी</option><option className="bg-slate-950" value="hinglish">Hinglish</option></select></div>
+          <button onClick={toggleTheme} className="rounded-full border border-white/10 bg-white/[.05] p-2.5 text-sky-100 backdrop-blur-xl" aria-label="Toggle theme">{theme==='dark'?<Sun size={16}/>:<Moon size={16}/>}</button>
+        </div>
+      </header>
+
+      <section className="relative z-10 mx-auto flex min-h-[calc(100vh-92px)] max-w-7xl items-center justify-center px-5 pb-10 pt-2 sm:px-8">
+        <div className="grid w-full items-center gap-10 lg:grid-cols-[1fr_520px]">
+          <motion.div initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} className="hidden lg:block">
+            <div className="inline-flex items-center gap-2 rounded-full border border-sky-300/15 bg-sky-300/[.06] px-4 py-2 text-[11px] font-bold uppercase tracking-[.2em] text-sky-200"><Sparkles size={14}/> {t('gatewayEyebrow')}</div>
+            <h1 className="mt-7 max-w-2xl text-5xl font-semibold leading-[1.05] tracking-tight xl:text-6xl">From aspirations <span className="text-sky-400">to achievements.</span></h1>
+            <p className="mt-6 max-w-xl text-base leading-8 text-slate-300">{t('gatewayBody')}</p>
+            <div className="mt-8 grid max-w-xl grid-cols-2 gap-3 text-sm text-slate-300">
+              {['Government schemes','Student scholarships','Business loans','Step-by-step guidance'].map((item) => <div key={item} className="rounded-2xl border border-white/10 bg-white/[.035] px-4 py-3 backdrop-blur-md">{item}</div>)}
             </div>
+            <p className="mt-10 text-xs uppercase tracking-[.3em] text-slate-500">Learn · Apply · Grow · Achieve</p>
+          </motion.div>
 
-            <div className="rounded-[2rem] border border-ink/10 bg-white p-6 shadow-xl sm:p-8">
-              <div className="grid grid-cols-2 rounded-2xl bg-black/[0.04] p-1">
-                <button onClick={()=>{setMode('login');setError('')}} className={`rounded-xl py-2.5 text-sm font-extrabold ${mode==='login'?'bg-white text-teal-dark shadow-sm':'text-ink/45'}`}>{t('login')}</button>
-                <button onClick={()=>{setMode('signup');setError('')}} className={`rounded-xl py-2.5 text-sm font-extrabold ${mode==='signup'?'bg-white text-teal-dark shadow-sm':'text-ink/45'}`}>{t('signup')}</button>
+          <motion.div initial={{ opacity: 0, y: 18, scale: .985 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: .45 }} className="mx-auto w-full max-w-[500px]">
+            <div className="rounded-[2rem] border border-white/10 bg-[#0b1728]/80 p-5 shadow-[0_30px_100px_rgba(0,0,0,.45)] backdrop-blur-2xl sm:p-8">
+              <div className="mb-6 text-center lg:hidden"><Feather className="mx-auto text-sky-300" size={30}/><h1 className="mt-2 text-2xl font-semibold">Udaan</h1></div>
+              <div className="grid grid-cols-2 border-b border-white/10">
+                <button onClick={()=>switchMode('login')} className={`relative py-3 text-sm font-bold ${mode==='login'?'text-white':'text-slate-500'}`}>{t('login')}{mode==='login'&&<span className="absolute inset-x-7 bottom-0 h-0.5 rounded-full bg-sky-400"/>}</button>
+                <button onClick={()=>switchMode('signup')} className={`relative py-3 text-sm font-bold ${mode==='signup'?'text-white':'text-slate-500'}`}>{t('signup')}{mode==='signup'&&<span className="absolute inset-x-7 bottom-0 h-0.5 rounded-full bg-sky-400"/>}</button>
               </div>
-              <h2 className="mt-7 font-display text-3xl font-bold">{mode==='login'?t('loginTitle'):t('signupTitle')}</h2>
-              <p className="mt-2 text-sm leading-6 text-ink/60">{mode==='login'?t('loginBody'):t('signupBody')}</p>
 
-              <form onSubmit={submit} className="mt-6 space-y-3">
-                {mode==='signup' && <label className="block"><span className="mb-1.5 block text-xs font-bold text-ink/60">{t('name')}</span><div className="flex items-center gap-2 rounded-2xl border border-ink/10 bg-cream/60 px-4"><UserRound size={16} className="text-teal"/><input value={name} onChange={e=>setName(e.target.value)} required className="w-full bg-transparent py-3.5 text-sm outline-none" /></div></label>}
-                <label className="block"><span className="mb-1.5 block text-xs font-bold text-ink/60">{t('email')}</span><div className="flex items-center gap-2 rounded-2xl border border-ink/10 bg-cream/60 px-4"><Mail size={16} className="text-teal"/><input type="email" value={email} onChange={e=>setEmail(e.target.value)} required className="w-full bg-transparent py-3.5 text-sm outline-none" /></div></label>
-                <label className="block"><span className="mb-1.5 block text-xs font-bold text-ink/60">{t('password')}</span><div className="flex items-center gap-2 rounded-2xl border border-ink/10 bg-cream/60 px-4"><LockKeyhole size={16} className="text-teal"/><input type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={8} required className="w-full bg-transparent py-3.5 text-sm outline-none" /></div>{mode==='signup'&&<span className="mt-1 block text-[11px] text-ink/45">Minimum 8 characters, with a letter and a number.</span>}</label>
-                {error && <p className="rounded-xl bg-terracotta/10 px-3 py-2 text-xs font-bold text-terracotta">{error}</p>}
-                <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-teal py-3.5 text-sm font-extrabold text-cream shadow-md transition hover:-translate-y-0.5 disabled:opacity-60">{busy?'Please wait…':t('continueEmail')} <ArrowRight size={16}/></button>
+              <h2 className="mt-7 text-center text-2xl font-semibold">{mode==='login'?t('loginTitle'):t('signupTitle')}</h2>
+              <p className="mx-auto mt-2 max-w-sm text-center text-sm leading-6 text-slate-400">{mode==='login'?t('loginBody'):t('signupBody')}</p>
+
+              <div className="mt-6 flex justify-center"><GoogleSignIn /></div>
+              <div className="my-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[.22em] text-slate-600"><span className="h-px flex-1 bg-white/10"/>OR<span className="h-px flex-1 bg-white/10"/></div>
+
+              <form onSubmit={submit} className="space-y-3">
+                {mode==='signup' && <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[.035] px-4 transition focus-within:border-sky-400/60"><UserRound size={16} className="text-slate-500"/><input placeholder={t('name')} value={name} onChange={e=>setName(e.target.value)} required className="w-full bg-transparent py-3.5 text-sm text-white outline-none placeholder:text-slate-600" /></label>}
+                <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[.035] px-4 transition focus-within:border-sky-400/60"><Mail size={16} className="text-slate-500"/><input type="email" placeholder={t('email')} value={email} onChange={e=>setEmail(e.target.value)} required className="w-full bg-transparent py-3.5 text-sm text-white outline-none placeholder:text-slate-600" /></label>
+                <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[.035] px-4 transition focus-within:border-sky-400/60"><LockKeyhole size={16} className="text-slate-500"/><input type="password" placeholder={t('password')} value={password} onChange={e=>setPassword(e.target.value)} minLength={8} required className="w-full bg-transparent py-3.5 text-sm text-white outline-none placeholder:text-slate-600" /></label>
+                {mode==='signup'&&<p className="text-[10px] text-slate-500">Minimum 8 characters with a letter and a number.</p>}
+                {error && <p className="rounded-xl border border-red-400/15 bg-red-400/10 px-3 py-2.5 text-xs font-bold text-red-300">{error}</p>}
+                <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-sky-400 py-3.5 text-sm font-extrabold text-white shadow-[0_10px_35px_rgba(14,165,233,.2)] transition hover:-translate-y-0.5 disabled:opacity-60">{busy?'Please wait…':mode==='signup'?t('signup'):t('login')} <ArrowRight size={16}/></button>
               </form>
 
-              <div className="my-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-widest text-ink/30"><span className="h-px flex-1 bg-ink/10"/>OR<span className="h-px flex-1 bg-ink/10"/></div>
-              <p className="mb-3 text-center text-xs text-ink/50">{t('googleContinue')}</p>
-              <div className="flex justify-center"><GoogleSignIn /></div>
-              <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-[11px] text-ink/45"><ShieldCheck size={13}/> Secure authentication. Your password is stored only as a cryptographic hash.</p>
+              <p className="mt-5 flex items-center justify-center gap-1.5 text-center text-[10px] text-slate-500"><ShieldCheck size={12}/> Secure login. Passwords are stored only as cryptographic hashes.</p>
             </div>
           </motion.div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }

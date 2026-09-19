@@ -32,7 +32,7 @@ function App() {
   const [accountOpen, setAccountOpen] = useState(false);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setSplash(false), 1900);
+    const timer = window.setTimeout(() => setSplash(false), 2350);
     return () => window.clearTimeout(timer);
   }, []);
 
