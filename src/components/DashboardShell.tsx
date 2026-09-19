@@ -12,6 +12,8 @@ import {
   Languages,
   Menu,
   Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
   Search,
   Settings,
   Sun,
@@ -49,9 +51,25 @@ export default function DashboardShell({
   const { user } = useAuth();
   const { language, setLanguage, theme, toggleTheme } = usePreferences();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem('udaan:dashboard-sidebar');
+      return saved !== 'off';
+    } catch {
+      return true;
+    }
+  });
   const [query, setQuery] = useState('');
 
   useEffect(() => setMobileOpen(false), [active]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('udaan:dashboard-sidebar', sidebarVisible ? 'on' : 'off');
+    } catch {
+      // Ignore storage errors; the toggle still works for the current session.
+    }
+  }, [sidebarVisible]);
 
   const menu = [
     { key: 'home', label: 'Home', icon: Home, action: onHome },
@@ -134,7 +152,7 @@ export default function DashboardShell({
 
   return (
     <div className="min-h-screen bg-[#071f1a] text-[#f7f0e2]">
-      <div className="fixed inset-y-0 left-0 z-50 hidden w-[248px] lg:block">{aside}</div>
+      {sidebarVisible && <div className="fixed inset-y-0 left-0 z-50 hidden w-[248px] lg:block">{aside}</div>}
 
       {mobileOpen && (
         <div className="fixed inset-0 z-[100] lg:hidden">
@@ -146,10 +164,20 @@ export default function DashboardShell({
         </div>
       )}
 
-      <div className="lg:pl-[248px]">
+      <div className={`transition-[padding] duration-300 ${sidebarVisible ? 'lg:pl-[248px]' : 'lg:pl-0'}`}>
         <header className="sticky top-0 z-40 border-b border-[#eab74f]/10 bg-[#071f1a]/90 backdrop-blur-xl">
           <div className="flex min-h-[72px] items-center gap-3 px-4 sm:px-6 lg:px-8">
             <button onClick={() => setMobileOpen(true)} className="rounded-xl border border-white/10 bg-white/[.04] p-2.5 text-[#f7f0e2] lg:hidden"><Menu size={19}/></button>
+
+            <button
+              onClick={() => setSidebarVisible((value) => !value)}
+              className="hidden items-center gap-2 rounded-xl border border-white/10 bg-[#0d3028] px-3 py-2.5 text-xs font-bold text-[#f7f0e2] transition hover:border-[#e8b347]/30 hover:text-[#f5c768] lg:flex"
+              aria-label={sidebarVisible ? 'Hide dashboard menu' : 'Show dashboard menu'}
+              title={sidebarVisible ? 'Hide dashboard menu' : 'Show dashboard menu'}
+            >
+              {sidebarVisible ? <PanelLeftClose size={18}/> : <PanelLeftOpen size={18}/>}
+              <span className="hidden xl:inline">{sidebarVisible ? 'Dashboard Off' : 'Dashboard On'}</span>
+            </button>
 
             <form onSubmit={submitSearch} className="hidden min-w-0 flex-1 md:block">
               <label className="flex max-w-2xl items-center gap-3 rounded-2xl border border-white/10 bg-[#0d3028] px-4 transition focus-within:border-[#e8b347]/35">
