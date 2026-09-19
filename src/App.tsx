@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import StatsStrip from "./components/StatsStrip";
 import HowItWorks from "./components/HowItWorks";
@@ -17,6 +16,7 @@ import EmiCalculator from "./components/EmiCalculator";
 import AccountPanel from "./components/AccountPanel";
 import SplashIntro from "./components/SplashIntro";
 import AuthGateway from "./components/AuthGateway";
+import DashboardShell from "./components/DashboardShell";
 import { UserProfile } from "./lib/matching";
 import { StudentProfile } from "./lib/scholarshipMatching";
 import { useAuth } from "./lib/auth";
@@ -36,25 +36,49 @@ function App() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const goHome = () => { setView("home"); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  const startEntrepreneur = () => { setView("entrepreneur-wizard"); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  const startStudent = () => { setView("student-wizard"); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  const openEmi = () => { setView("emi"); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const top = () => window.scrollTo({ top: 0, behavior: "smooth" });
+  const goHome = () => { setView("home"); top(); };
+  const startEntrepreneur = () => { setView("entrepreneur-wizard"); top(); };
+  const startStudent = () => { setView("student-wizard"); top(); };
+  const openEmi = () => { setView("emi"); top(); };
+  const openPortals = () => {
+    setView("home");
+    window.setTimeout(() => document.getElementById("portals")?.scrollIntoView({ behavior: "smooth", block: "start" }), 80);
+  };
 
   if (splash) return <SplashIntro />;
-  if (loading) return <div className="flex min-h-screen items-center justify-center bg-cream text-sm font-bold text-ink/60">Checking your Udaan session…</div>;
+  if (loading) return <div className="flex min-h-screen items-center justify-center bg-[#071f1a] text-sm font-bold text-[#f7f0e2]/65">Checking your Udaan session…</div>;
   if (!user) return <AuthGateway />;
 
-  return (
-    <div className="min-h-screen bg-cream selection:bg-teal selection:text-cream">
-      <Navbar onHome={goHome} onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} onOpenAccount={() => setAccountOpen(true)} mode={view} />
+  const active = view === "home" ? "home" : view.startsWith("entrepreneur") ? "entrepreneur" : view.startsWith("student") ? "student" : "emi";
 
-      {view === "home" && <><Hero onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} /><StatsStrip /><HowItWorks /><SchemeShowcase onStart={startEntrepreneur} /><StudentShowcase onStartStudent={startStudent} /><OfficialPortalsSection /><Testimonials /><Footer onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} /></>}
-      {view === "entrepreneur-wizard" && <div className="py-8"><Wizard onComplete={(p) => { setEntrepreneurProfile(p); setView("entrepreneur-results"); window.scrollTo({ top: 0, behavior: "smooth" }); }} /></div>}
-      {view === "entrepreneur-results" && entrepreneurProfile && <Results profile={entrepreneurProfile} onRestart={startEntrepreneur} onOpenEmi={openEmi} onSwitchToStudents={startStudent} onRequestLogin={() => setAccountOpen(true)} />}
-      {view === "student-wizard" && <div className="py-8"><StudentWizard onComplete={(p) => { setStudentProfile(p); setView("student-results"); window.scrollTo({ top: 0, behavior: "smooth" }); }} onCancel={goHome} /></div>}
-      {view === "student-results" && studentProfile && <StudentResults profile={studentProfile} onRestart={startStudent} onSwitchToLoans={startEntrepreneur} onRequestLogin={() => setAccountOpen(true)} />}
-      {view === "emi" && <div className="py-8"><EmiCalculator onFindSchemes={startEntrepreneur} onClose={goHome} /></div>}
+  return (
+    <div className="min-h-screen bg-[#071f1a] selection:bg-gold selection:text-[#071f1a]">
+      <DashboardShell
+        active={active}
+        onHome={goHome}
+        onBusiness={startEntrepreneur}
+        onStudent={startStudent}
+        onEmi={openEmi}
+        onOfficialPortals={openPortals}
+        onOpenAccount={() => setAccountOpen(true)}
+      >
+        {view === "home" && <>
+          <Hero onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} />
+          <StatsStrip />
+          <HowItWorks />
+          <SchemeShowcase onStart={startEntrepreneur} />
+          <StudentShowcase onStartStudent={startStudent} />
+          <OfficialPortalsSection />
+          <Testimonials />
+          <Footer onStartEntrepreneur={startEntrepreneur} onStartStudent={startStudent} onOpenEmi={openEmi} />
+        </>}
+        {view === "entrepreneur-wizard" && <div className="py-8"><Wizard onComplete={(p) => { setEntrepreneurProfile(p); setView("entrepreneur-results"); top(); }} /></div>}
+        {view === "entrepreneur-results" && entrepreneurProfile && <Results profile={entrepreneurProfile} onRestart={startEntrepreneur} onOpenEmi={openEmi} onSwitchToStudents={startStudent} onRequestLogin={() => setAccountOpen(true)} />}
+        {view === "student-wizard" && <div className="py-8"><StudentWizard onComplete={(p) => { setStudentProfile(p); setView("student-results"); top(); }} onCancel={goHome} /></div>}
+        {view === "student-results" && studentProfile && <StudentResults profile={studentProfile} onRestart={startStudent} onSwitchToLoans={startEntrepreneur} onRequestLogin={() => setAccountOpen(true)} />}
+        {view === "emi" && <div className="py-8"><EmiCalculator onFindSchemes={startEntrepreneur} onClose={goHome} /></div>}
+      </DashboardShell>
 
       <AccountPanel open={accountOpen} onClose={() => setAccountOpen(false)} />
       <ChatWidget />

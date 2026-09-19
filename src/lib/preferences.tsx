@@ -82,7 +82,7 @@ const PreferencesContext = createContext<PreferencesValue | null>(null);
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => (localStorage.getItem('udaan_language') as Language) || 'en');
-  const [theme, setThemeState] = useState<ThemeMode>(() => (localStorage.getItem('udaan_theme') as ThemeMode) || 'light');
+  const [theme, setThemeState] = useState<ThemeMode>(() => (localStorage.getItem('udaan_theme') as ThemeMode) || 'dark');
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

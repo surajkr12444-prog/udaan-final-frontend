@@ -63,6 +63,22 @@ export default function ChatWidget() {
 
   useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
+  useEffect(() => {
+    const openHandler = () => setOpen(true);
+    const queryHandler = (event: Event) => {
+      const text = String((event as CustomEvent<string>).detail || '').trim();
+      if (!text) return;
+      setOpen(true);
+      window.setTimeout(() => sendText(text), 40);
+    };
+    window.addEventListener('udaan:open-chat', openHandler);
+    window.addEventListener('udaan:chat-query', queryHandler as EventListener);
+    return () => {
+      window.removeEventListener('udaan:open-chat', openHandler);
+      window.removeEventListener('udaan:chat-query', queryHandler as EventListener);
+    };
+  }, [busy, uiLanguage, guide, voiceReplies]);
+
   const quickPrompts = useMemo(() => uiLanguage === 'hi'
     ? ['मेरे लिए कौन सी योजना है?', 'कौन से documents चाहिए?', 'Scholarship कैसे apply करें?']
     : uiLanguage === 'hinglish'
@@ -121,32 +137,32 @@ export default function ChatWidget() {
     <>
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0, y: 20, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: .96 }} className="fixed bottom-24 right-4 z-[80] flex h-[34rem] w-[24rem] max-w-[94vw] flex-col overflow-hidden rounded-[1.75rem] border border-ink/10 bg-white shadow-2xl">
-            <div className="flex items-center justify-between bg-teal-dark px-4 py-3.5 text-cream">
-              <div className="flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold text-ink"><Bot size={18}/></span><div><p className="text-sm font-extrabold">Udaan AI</p><p className="text-[10px] text-cream/60">Schemes · Scholarships · Application guide</p></div></div>
+          <motion.div initial={{ opacity: 0, y: 20, scale: .96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: .96 }} className="fixed bottom-24 right-4 z-[80] flex h-[34rem] w-[24rem] max-w-[94vw] flex-col overflow-hidden rounded-[1.75rem] border border-[#e8b347]/20 bg-[#0b2d25] text-[#f7f0e2] shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#e8b347]/15 bg-[#08231d] px-4 py-3.5 text-[#f7f0e2]">
+              <div className="flex items-center gap-2.5"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#e8b347] text-[#08231d]"><Bot size={18}/></span><div><p className="text-sm font-extrabold">Udaan AI</p><p className="text-[10px] text-cream/60">Schemes · Scholarships · Application guide</p></div></div>
               <div className="flex items-center gap-1"><button title={voiceReplies?t('voiceOn'):t('voiceOff')} onClick={()=>{setVoiceReplies(v=>!v); if(voiceReplies) window.speechSynthesis?.cancel();}} className="rounded-full p-2 hover:bg-white/10">{voiceReplies?<Volume2 size={16}/>:<VolumeX size={16}/>}</button><button onClick={()=>setOpen(false)} className="rounded-full p-2 hover:bg-white/10"><X size={17}/></button></div>
             </div>
 
-            {guide && <div className="border-b border-gold/20 bg-gold/10 px-4 py-2.5 text-[11px] leading-5 text-ink"><span className="font-extrabold">Guide mode:</span> {guide.title} · {guide.portalName}</div>}
+            {guide && <div className="border-b border-[#e8b347]/20 bg-[#e8b347]/10 px-4 py-2.5 text-[11px] leading-5 text-ink"><span className="font-extrabold">Guide mode:</span> {guide.title} · {guide.portalName}</div>}
 
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-              {msgs.map((m,i)=><div key={i} className={`group max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${m.role==='bot'?'bg-cream-soft text-ink/85':'ml-auto bg-teal text-cream'}`}><div>{m.text}</div>{m.role==='bot'&&<div className="mt-1.5 flex items-center justify-between"><span className="text-[9px] uppercase tracking-wider text-ink/30">{m.source==='assistant'?'AI reply':m.source==='guide'?'Portal guide':'Udaan guide'}</span><button onClick={()=>speak(m.text,m.language||uiLanguage)} className="opacity-50 transition hover:opacity-100" title="Read aloud"><Volume2 size={12}/></button></div>}</div>)}
-              {busy&&<div className="inline-flex items-center gap-2 rounded-2xl bg-cream-soft px-3.5 py-2.5 text-xs text-ink/55"><LoaderCircle size={14} className="animate-spin"/> Udaan AI is thinking…</div>}
+              {msgs.map((m,i)=><div key={i} className={`group max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${m.role==='bot'?'bg-[#12392f] text-[#f7f0e2]/88':'ml-auto bg-[#d8a53e] text-[#08231d]'}`}><div>{m.text}</div>{m.role==='bot'&&<div className="mt-1.5 flex items-center justify-between"><span className="text-[9px] uppercase tracking-wider text-ink/30">{m.source==='assistant'?'AI reply':m.source==='guide'?'Portal guide':'Udaan guide'}</span><button onClick={()=>speak(m.text,m.language||uiLanguage)} className="opacity-50 transition hover:opacity-100" title="Read aloud"><Volume2 size={12}/></button></div>}</div>)}
+              {busy&&<div className="inline-flex items-center gap-2 rounded-2xl bg-[#12392f] px-3.5 py-2.5 text-xs text-[#f7f0e2]/55"><LoaderCircle size={14} className="animate-spin"/> Udaan AI is thinking…</div>}
               <div ref={endRef}/>
             </div>
 
-            <div className="border-t border-ink/10 bg-white/95 p-3">
-              <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1">{quickPrompts.map((q)=><button key={q} onClick={()=>sendText(q)} className="shrink-0 rounded-full border border-ink/10 bg-cream px-2.5 py-1.5 text-[10px] font-bold text-ink/65 hover:border-teal/30">{q}</button>)}</div>
+            <div className="border-t border-white/10 bg-[#08231d]/95 p-3">
+              <div className="mb-2 flex gap-1.5 overflow-x-auto pb-1">{quickPrompts.map((q)=><button key={q} onClick={()=>sendText(q)} className="shrink-0 rounded-full border border-white/10 bg-[#12392f] px-2.5 py-1.5 text-[10px] font-bold text-[#f7f0e2]/70 hover:border-[#e8b347]/35">{q}</button>)}</div>
               <div className="flex items-center gap-2">
-                <button onClick={toggleListening} className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${listening?'border-terracotta bg-terracotta text-cream':'border-ink/10 bg-cream text-teal'}`} title={listening?t('listening'):'Speak'}>{listening?<MicOff size={16}/>:<Mic size={16}/>}</button>
-                <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&sendText()} placeholder={listening?t('listening'):t('ask')} className="min-w-0 flex-1 rounded-full border border-ink/10 bg-cream px-4 py-2.5 text-sm text-ink outline-none focus:border-teal" />
-                <button disabled={busy} onClick={()=>sendText()} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-terracotta text-cream transition hover:-translate-y-0.5 disabled:opacity-50"><Send size={16}/></button>
+                <button onClick={toggleListening} className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${listening?'border-terracotta bg-terracotta text-cream':'border-white/10 bg-[#12392f] text-[#efbf5c]'}`} title={listening?t('listening'):'Speak'}>{listening?<MicOff size={16}/>:<Mic size={16}/>}</button>
+                <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==='Enter'&&sendText()} placeholder={listening?t('listening'):t('ask')} className="min-w-0 flex-1 rounded-full border border-white/10 bg-[#12392f] px-4 py-2.5 text-sm text-[#f7f0e2] outline-none placeholder:text-[#f7f0e2]/35 focus:border-[#e8b347]/45" />
+                <button disabled={busy} onClick={()=>sendText()} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#e8b347] text-[#08231d] transition hover:-translate-y-0.5 disabled:opacity-50"><Send size={16}/></button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-      <button onClick={()=>setOpen(o=>!o)} className="fixed bottom-5 right-5 z-[80] flex h-14 w-14 items-center justify-center rounded-full bg-terracotta text-cream shadow-xl transition hover:-translate-y-1">{open?<X size={22}/>:<MessageCircle size={22}/>}</button>
+      <button onClick={()=>setOpen(o=>!o)} className="fixed bottom-5 right-5 z-[80] flex h-14 w-14 items-center justify-center rounded-full bg-[#e8b347] text-[#08231d] shadow-xl transition hover:-translate-y-1">{open?<X size={22}/>:<MessageCircle size={22}/>}</button>
     </>
   );
 }
