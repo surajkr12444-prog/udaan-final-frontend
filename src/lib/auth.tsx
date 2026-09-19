@@ -8,6 +8,7 @@ export interface AuthUser {
   email: string;
   avatar?: string;
   role?: string;
+  authProvider?: string;
 }
 
 interface AuthContextValue {
@@ -15,6 +16,8 @@ interface AuthContextValue {
   token: string | null;
   loading: boolean;
   loginWithGoogleCredential: (credential: string) => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  signupWithEmail: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -34,14 +37,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [loading, setLoading] = useState(Boolean(token));
 
+  const commitSession = (nextToken: string, nextUser: AuthUser) => {
+    localStorage.setItem(TOKEN_KEY, nextToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(nextUser));
+    setToken(nextToken);
+    setUser(nextUser);
+  };
+
   useEffect(() => {
     if (!token || !API_URL) {
       setLoading(false);
       return;
     }
-    fetch(`${API_URL}/api/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } })
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
         if (!res.ok || !data?.success) throw new Error('Session expired');
@@ -60,18 +68,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function loginWithGoogleCredential(credential: string) {
     if (!API_URL) throw new Error('VITE_API_URL is not configured');
     const response = await fetch(`${API_URL}/api/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ credential }),
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ credential }),
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok || !data?.success || !data?.token) {
-      throw new Error(data?.message || 'Google sign-in failed');
-    }
-    localStorage.setItem(TOKEN_KEY, data.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(data.user));
-    setToken(data.token);
-    setUser(data.user);
+    if (!response.ok || !data?.success || !data?.token) throw new Error(data?.message || 'Google sign-in failed');
+    commitSession(data.token, data.user);
+  }
+
+  async function loginWithEmail(email: string, password: string) {
+    if (!API_URL) throw new Error('VITE_API_URL is not configured');
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.success || !data?.token) throw new Error(data?.message || 'Login failed');
+    commitSession(data.token, data.user);
+  }
+
+  async function signupWithEmail(name: string, email: string, password: string) {
+    if (!API_URL) throw new Error('VITE_API_URL is not configured');
+    const response = await fetch(`${API_URL}/api/auth/signup`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, email, password }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.success || !data?.token) throw new Error(data?.message || 'Sign up failed');
+    commitSession(data.token, data.user);
   }
 
   function logout() {
@@ -81,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }
 
-  const value = useMemo(() => ({ user, token, loading, loginWithGoogleCredential, logout }), [user, token, loading]);
+  const value = useMemo(() => ({ user, token, loading, loginWithGoogleCredential, loginWithEmail, signupWithEmail, logout }), [user, token, loading]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
@@ -91,6 +112,4 @@ export function useAuth() {
   return ctx;
 }
 
-export function getStoredToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
+export function getStoredToken() { return localStorage.getItem(TOKEN_KEY); }

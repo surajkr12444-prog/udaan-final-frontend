@@ -56,3 +56,33 @@ body {
 .text-balance {
   text-wrap: balance;
 }
+
+/* Udaan theme system */
+html[data-theme="dark"] {
+  --color-ink: #f5efe4;
+  --color-ink-soft: #d9e6e1;
+  --color-cream: #091310;
+  --color-cream-soft: #10201b;
+  --color-teal: #3a9996;
+  --color-teal-dark: #a6dad2;
+  --color-teal-light: #70c4bd;
+  --color-gold: #efb657;
+  --color-gold-soft: #ffd88b;
+  --color-terracotta: #ef7954;
+  --color-sand: #26352f;
+  color-scheme: dark;
+}
+html[data-theme="dark"] body { background: var(--color-cream); color: var(--color-ink); }
+html[data-theme="dark"] .bg-white { background-color: #12221d !important; }
+html[data-theme="dark"] .bg-white\/60 { background-color: rgb(18 34 29 / .72) !important; }
+html[data-theme="dark"] .bg-white\/70 { background-color: rgb(18 34 29 / .78) !important; }
+html[data-theme="dark"] .border-black\/5,
+html[data-theme="dark"] .border-black\/10 { border-color: rgb(255 255 255 / .10) !important; }
+html[data-theme="dark"] .bg-black\/\[0\.03\],
+html[data-theme="dark"] .bg-black\/\[0\.04\],
+html[data-theme="dark"] .bg-black\/5 { background-color: rgb(255 255 255 / .06) !important; }
+html[data-theme="dark"] select option { background: #12221d; color: #f5efe4; }
+html[data-theme="dark"] .bg-ink { background-color: #06110f !important; }
+html[data-theme="dark"] .bg-ink-soft,
+html[data-theme="dark"] .bg-ink-soft\/90 { background-color: rgb(13 31 26 / .96) !important; }
+html[data-theme="dark"] .text-cream { color: #f8f3e9 !important; }

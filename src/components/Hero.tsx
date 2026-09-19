@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Sparkles, ShieldCheck, GraduationCap, Briefcase, Calculator, ArrowRight, ExternalLink } from "lucide-react";
+import { Sparkles, ShieldCheck, GraduationCap, Briefcase, Calculator, ArrowRight } from "lucide-react";
+import { usePreferences } from "../lib/preferences";
 
 interface HeroProps {
   onStartEntrepreneur: () => void;
@@ -8,6 +9,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onStartEntrepreneur, onStartStudent, onOpenEmi }: HeroProps) {
+  const { t, language } = usePreferences();
   return (
     <section className="relative overflow-hidden bg-ink text-cream">
       <div className="pointer-events-none absolute inset-0 grain-overlay opacity-40" />
@@ -28,18 +30,15 @@ export default function Hero({ onStartEntrepreneur, onStartStudent, onOpenEmi }:
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-gold-soft">
-            <Sparkles size={14} /> National Scheme & Scholarship Matching
+            <Sparkles size={14} /> {t('heroBadge')}
           </div>
 
           <h1 className="mt-6 font-display text-balance text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl md:text-6xl">
-            Empowering Entrepreneurs & Students with Government Capital.
+            {t('heroTitle')}
           </h1>
 
           <p className="mt-6 max-w-xl text-base sm:text-lg leading-relaxed text-cream/80">
-            <strong>Udaan</strong> reads your profile and instantly connects you to verified
-            Government of India schemes — whether you are an <strong>entrepreneur</strong> seeking
-            subsidized business loans, or a <strong>student</strong> looking for national central scholarships.
-            Direct links to official application portals.
+{t('heroBody')}
           </p>
 
           {/* DUAL ACTION CARDS / BUTTONS */}
@@ -58,7 +57,7 @@ export default function Hero({ onStartEntrepreneur, onStartStudent, onOpenEmi }:
                 </span>
               </div>
               <h3 className="mt-3 font-display text-lg font-bold text-cream">
-                I am an Entrepreneur
+                {language === 'hi' ? 'मैं उद्यमी हूँ' : language === 'hinglish' ? 'Main Entrepreneur hoon' : 'I am an Entrepreneur'}
               </h3>
               <p className="mt-1 text-xs text-cream/70 leading-relaxed">
                 Find Mudra, PMEGP, Stand-Up India & MSME loans with subsidies up to 35%.
@@ -88,7 +87,7 @@ export default function Hero({ onStartEntrepreneur, onStartStudent, onOpenEmi }:
                 </span>
               </div>
               <h3 className="mt-3 font-display text-lg font-bold text-cream">
-                I am a Student
+                {language === 'hi' ? 'मैं छात्र/छात्रा हूँ' : language === 'hinglish' ? 'Main Student hoon' : 'I am a Student'}
               </h3>
               <p className="mt-1 text-xs text-cream/70 leading-relaxed">
                 Find Post-Matric, PM-YASASVI, AICTE Pragati & Central Sector scholarships up to ₹1.25L.

@@ -6,6 +6,7 @@ import { fetchScholarshipMatches, saveScholarship } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import StudentCard from "./StudentCard";
 import StudentScholarshipModal from "./StudentScholarshipModal";
+import { openPortalWithGuide } from "../lib/portalGuide";
 
 interface Props {
   profile: StudentProfile;
@@ -133,14 +134,12 @@ export default function StudentResults({ profile, onRestart, onSwitchToLoans, on
             </p>
           </div>
         </div>
-        <a
-          href="https://scholarships.gov.in/"
-          target="_blank"
-          rel="noreferrer"
+        <button
+          onClick={() => openPortalWithGuide({ title: 'National Scholarship Portal application', portalName: 'National Scholarship Portal (NSP)', url: 'https://scholarships.gov.in/', kind: 'scholarship' })}
           className="shrink-0 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-xs font-bold text-cream shadow-sm hover:bg-ink-soft transition"
         >
-          Open scholarships.gov.in <ExternalLink size={14} />
-        </a>
+          Open NSP + Udaan Guide <ExternalLink size={14} />
+        </button>
       </div>
 
       {/* Results Count */}

@@ -1,5 +1,6 @@
 import { ScoredScheme } from "../lib/matching";
 import { ArrowRight, ExternalLink, Bookmark } from "lucide-react";
+import { openPortalWithGuide } from "../lib/portalGuide";
 
 interface Props {
   item: ScoredScheme;
@@ -52,9 +53,9 @@ export default function SchemeCard({ item, onOpen, onSave, rank }: Props) {
       </div>
 
       <div className="mt-5 flex items-center justify-between gap-2 border-t border-ink/10 pt-4">
-        <a href={scheme.applyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:text-teal-dark transition">
-          Govt Portal <ExternalLink size={12} />
-        </a>
+        <button onClick={() => openPortalWithGuide({ title: scheme.name, portalName: scheme.provider || 'Official Government Portal', url: scheme.applyUrl, kind: 'scheme' })} className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:text-teal-dark transition">
+          Govt Portal + Guide <ExternalLink size={12} />
+        </button>
         <div className="flex items-center gap-2">
           {onSave && (
             <button onClick={() => onSave(item)} className="inline-flex items-center gap-1 rounded-full bg-teal/10 px-2.5 py-1.5 text-xs font-bold text-teal-dark hover:bg-teal/20">

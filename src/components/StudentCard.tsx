@@ -1,5 +1,6 @@
 import { ScoredScholarship } from "../lib/scholarshipMatching";
 import { ArrowRight, ExternalLink, GraduationCap, Building, Bookmark } from "lucide-react";
+import { openPortalWithGuide } from "../lib/portalGuide";
 
 interface Props {
   item: ScoredScholarship;
@@ -44,9 +45,9 @@ export default function StudentCard({ item, onOpen, onSave, rank }: Props) {
       </div>
 
       <div className="mt-6 flex items-center justify-between gap-2 border-t border-ink/10 pt-4">
-        <a href={scholarship.applyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:text-teal-dark transition">
-          {scholarship.portalName} <ExternalLink size={12} />
-        </a>
+        <button onClick={() => openPortalWithGuide({ title: scholarship.name, portalName: scholarship.portalName, url: scholarship.applyUrl, kind: 'scholarship' })} className="inline-flex items-center gap-1 text-xs font-bold text-teal hover:text-teal-dark transition">
+          {scholarship.portalName} + Guide <ExternalLink size={12} />
+        </button>
         <div className="flex items-center gap-2">
           {onSave && (
             <button onClick={() => onSave(item)} className="inline-flex items-center gap-1 rounded-full bg-teal/10 px-2.5 py-1.5 text-xs font-bold text-teal-dark hover:bg-teal/20">

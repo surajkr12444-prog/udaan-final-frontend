@@ -1,4 +1,5 @@
 import { ExternalLink, ShieldCheck, Building2, GraduationCap, Briefcase } from "lucide-react";
+import { openPortalWithGuide } from "../lib/portalGuide";
 
 export default function OfficialPortalsSection() {
   const portals = [
@@ -95,14 +96,12 @@ export default function OfficialPortalsSection() {
               </div>
 
               <div className="mt-6 border-t border-ink/5 pt-4">
-                <a
-                  href={p.url}
-                  target="_blank"
-                  rel="noreferrer"
+                <button
+                  onClick={() => openPortalWithGuide({ title: p.name, portalName: p.name, url: p.url, kind: p.type === 'student' ? 'scholarship' : 'scheme' })}
                   className="flex w-full items-center justify-center gap-2 rounded-xl bg-ink py-2.5 text-xs font-bold text-cream hover:bg-ink-soft transition"
                 >
-                  <Building2 size={13} /> Open Official Portal <ExternalLink size={13} />
-                </a>
+                  <Building2 size={13} /> Open Portal + Udaan Guide <ExternalLink size={13} />
+                </button>
               </div>
             </div>
           ))}

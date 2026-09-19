@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, FileCheck2, BadgeCheck } from "lucide-react";
 import { ScoredScheme } from "../lib/matching";
+import { openPortalWithGuide } from "../lib/portalGuide";
+import { usePreferences } from "../lib/preferences";
 
 interface Props {
   item: ScoredScheme | null;
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export default function SchemeModal({ item, onClose }: Props) {
+  const { t } = usePreferences();
   return (
     <AnimatePresence>
       {item && (
@@ -95,14 +98,13 @@ export default function SchemeModal({ item, onClose }: Props) {
               <p className="mt-4 text-xs font-semibold text-ink/50">Interest / structure: {item.scheme.interest}</p>
             </div>
 
-            <a
-              href={item.scheme.applyUrl}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => openPortalWithGuide({ title: item.scheme.name, portalName: item.scheme.provider || 'Official Government Portal', url: item.scheme.applyUrl, kind: 'scheme' })}
               className="mt-7 flex w-full items-center justify-center gap-2 rounded-full bg-terracotta py-4 text-base font-bold text-cream shadow-[0_4px_0_0_rgba(0,0,0,0.2)] transition hover:-translate-y-0.5"
             >
-              Go to official application portal <ExternalLink size={16} />
-            </a>
+              {t('openOfficial')} <ExternalLink size={16} />
+            </button>
+            <p className="mt-2 text-center text-[11px] text-ink/50">The government site opens in a new tab; Udaan AI stays here to guide each step.</p>
           </motion.div>
         </motion.div>
       )}

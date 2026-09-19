@@ -6,6 +6,7 @@ import { fetchEntrepreneurMatches, saveScheme } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import SchemeCard from "./SchemeCard";
 import SchemeModal from "./SchemeModal";
+import { openPortalWithGuide } from "../lib/portalGuide";
 
 interface Props {
   profile: UserProfile;
@@ -110,13 +111,9 @@ export default function Results({ profile, onRestart, onOpenEmi, onSwitchToStude
           <Building2 size={20} className="text-terracotta shrink-0" />
           <p className="text-xs font-medium text-ink">
             <strong>Direct Official Portals:</strong> You can apply directly on{" "}
-            <a href="https://www.jansamarth.in" target="_blank" rel="noreferrer" className="font-bold text-terracotta hover:underline">
-              JanSamarth.in
-            </a>{" "}
+            <button onClick={() => openPortalWithGuide({ title: 'JanSamarth credit-linked schemes', portalName: 'JanSamarth', url: 'https://www.jansamarth.in/', kind: 'scheme' })} className="font-bold text-terracotta hover:underline">JanSamarth.in</button>{" "}
             or{" "}
-            <a href="https://www.udyamimitra.in" target="_blank" rel="noreferrer" className="font-bold text-teal-dark hover:underline">
-              UdyamiMitra.in
-            </a>
+            <button onClick={() => openPortalWithGuide({ title: 'MUDRA / Stand-Up India', portalName: 'Udyami Mitra', url: 'https://www.udyamimitra.in/', kind: 'scheme' })} className="font-bold text-teal-dark hover:underline">UdyamiMitra.in</button>
             . Zero middlemen or broker fees.
           </p>
         </div>

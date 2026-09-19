@@ -1,4 +1,5 @@
-import { GraduationCap, ExternalLink, ArrowRight, Award, CheckCircle2 } from "lucide-react";
+import { GraduationCap, ExternalLink, ArrowRight, Award } from "lucide-react";
+import { openPortalWithGuide } from "../lib/portalGuide";
 import { SCHOLARSHIPS } from "../data/scholarships";
 
 interface Props {
@@ -62,14 +63,12 @@ export default function StudentShowcase({ onStartStudent }: Props) {
                 <div className="flex items-center justify-between text-xs font-bold text-teal-dark">
                   <span>{s.amountLabel}</span>
                 </div>
-                <a
-                  href={s.applyUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 flex items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/[0.02] py-2 text-xs font-semibold text-ink/80 hover:bg-black/5 hover:text-ink transition"
+                <button
+                  onClick={() => openPortalWithGuide({ title: s.name, portalName: s.portalName, url: s.applyUrl, kind: 'scholarship' })}
+                  className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-black/10 bg-black/[0.02] py-2 text-xs font-semibold text-ink/80 hover:bg-black/5 hover:text-ink transition"
                 >
-                  Visit {s.portalName} <ExternalLink size={12} />
-                </a>
+                  Visit {s.portalName} + Guide <ExternalLink size={12} />
+                </button>
               </div>
             </div>
           ))}
@@ -92,14 +91,12 @@ export default function StudentShowcase({ onStartStudent }: Props) {
             </div>
           </div>
           <div className="flex gap-3 shrink-0">
-            <a
-              href="https://scholarships.gov.in/"
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => openPortalWithGuide({ title: 'National Scholarship Portal application', portalName: 'NSP', url: 'https://scholarships.gov.in/', kind: 'scholarship' })}
               className="rounded-full bg-ink px-5 py-3 text-xs font-bold text-cream hover:bg-ink-soft transition shadow-xs flex items-center gap-1.5"
             >
-              Open scholarships.gov.in <ExternalLink size={14} />
-            </a>
+              Open NSP + Udaan Guide <ExternalLink size={14} />
+            </button>
             <button
               onClick={onStartStudent}
               className="rounded-full bg-teal px-5 py-3 text-xs font-bold text-cream hover:bg-teal-dark transition shadow-xs"

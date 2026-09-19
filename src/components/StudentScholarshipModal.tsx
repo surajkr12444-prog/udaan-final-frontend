@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, FileCheck2, BadgeCheck, GraduationCap, Building } from "lucide-react";
 import { ScoredScholarship } from "../lib/scholarshipMatching";
+import { openPortalWithGuide } from "../lib/portalGuide";
+import { usePreferences } from "../lib/preferences";
 
 interface Props {
   item: ScoredScholarship | null;
@@ -8,6 +10,7 @@ interface Props {
 }
 
 export default function StudentScholarshipModal({ item, onClose }: Props) {
+  const { t } = usePreferences();
   return (
     <AnimatePresence>
       {item && (
@@ -116,17 +119,14 @@ export default function StudentScholarshipModal({ item, onClose }: Props) {
 
             {/* Official Portal Redirect CTA */}
             <div className="mt-7">
-              <a
-                href={item.scholarship.applyUrl}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={() => openPortalWithGuide({ title: item.scholarship.name, portalName: item.scholarship.portalName, url: item.scholarship.applyUrl, kind: 'scholarship' })}
                 className="flex w-full items-center justify-center gap-2.5 rounded-full bg-terracotta py-4 text-sm font-bold text-cream shadow-[0_4px_0_0_rgba(0,0,0,0.2)] transition hover:-translate-y-0.5 hover:shadow-[0_6px_0_0_rgba(0,0,0,0.2)] active:translate-y-0"
               >
-                <GraduationCap size={18} /> Apply on {item.scholarship.portalName}{" "}
-                <ExternalLink size={16} />
-              </a>
+                <GraduationCap size={18} /> {t('openOfficial')} <ExternalLink size={16} />
+              </button>
               <p className="mt-2 text-center text-[11px] text-ink/50">
-                You will be redirected to the official government portal ({item.scholarship.portalName})
+                The official portal opens in a new tab. Keep Udaan open so the AI guide can walk you through the steps.
               </p>
             </div>
           </motion.div>
